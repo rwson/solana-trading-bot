@@ -1,10 +1,10 @@
-import { MarketCache, PoolCache } from './cache';
-import { Listeners } from './listeners';
-import { Connection, KeyedAccountInfo, Keypair } from '@solana/web3.js';
-import { LIQUIDITY_STATE_LAYOUT_V4, MARKET_STATE_LAYOUT_V3, Token, TokenAmount } from '@raydium-io/raydium-sdk';
-import { AccountLayout, getAssociatedTokenAddressSync } from '@solana/spl-token';
-import { Bot, BotConfig } from './bot';
-import { DefaultTransactionExecutor, TransactionExecutor } from './transactions';
+import { MarketCache, PoolCache } from './cache'
+import { Listeners } from './listeners'
+import { Connection, KeyedAccountInfo, Keypair } from '@solana/web3.js'
+import { LIQUIDITY_STATE_LAYOUT_V4, MARKET_STATE_LAYOUT_V3, Token, TokenAmount } from '@raydium-io/raydium-sdk'
+import { AccountLayout, getAssociatedTokenAddressSync } from '@solana/spl-token'
+import { Bot, BotConfig } from './bot'
+import { DefaultTransactionExecutor, TransactionExecutor } from './transactions'
 import {
   getToken,
   getWallet,
@@ -45,124 +45,108 @@ import {
   FILTER_CHECK_INTERVAL,
   FILTER_CHECK_DURATION,
   CONSECUTIVE_FILTER_MATCHES,
-} from './helpers';
-import { version } from './package.json';
-import { WarpTransactionExecutor } from './transactions/warp-transaction-executor';
-import { JitoTransactionExecutor } from './transactions/jito-rpc-transaction-executor';
+} from './helpers'
+import { version } from './package.json'
+import { WarpTransactionExecutor } from './transactions/warp-transaction-executor'
+import { JitoTransactionExecutor } from './transactions/jito-rpc-transaction-executor'
 
 const connection = new Connection(RPC_ENDPOINT, {
   wsEndpoint: RPC_WEBSOCKET_ENDPOINT,
   commitment: COMMITMENT_LEVEL,
-});
+})
 
 function printDetails(wallet: Keypair, quoteToken: Token, bot: Bot) {
-  logger.info(`  
-                                        ..   :-===++++-     
-                                .-==+++++++- =+++++++++-    
-            ..:::--===+=.=:     .+++++++++++:=+++++++++:    
-    .==+++++++++++++++=:+++:    .+++++++++++.=++++++++-.    
-    .-+++++++++++++++=:=++++-   .+++++++++=:.=+++++-::-.    
-     -:+++++++++++++=:+++++++-  .++++++++-:- =+++++=-:      
-      -:++++++=++++=:++++=++++= .++++++++++- =+++++:        
-       -:++++-:=++=:++++=:-+++++:+++++====--:::::::.        
-        ::=+-:::==:=+++=::-:--::::::::::---------::.        
-         ::-:  .::::::::.  --------:::..                    
-          :-    .:.-:::.                                    
+  logger.info('🚀🚀🚀🚀🚀 solana 🚀🚀🚀🚀🚀')
 
-          WARP DRIVE ACTIVATED 🚀🐟
-          Made with ❤️ by humans.
-          Version: ${version}                                          
-  `);
+  const botConfig = bot.config
 
-  const botConfig = bot.config;
+  logger.info('------- CONFIGURATION START -------')
+  logger.info(`Wallet: ${wallet.publicKey.toString()}`)
 
-  logger.info('------- CONFIGURATION START -------');
-  logger.info(`Wallet: ${wallet.publicKey.toString()}`);
-
-  logger.info('- Bot -');
+  logger.info('- Bot -')
 
   logger.info(
-    `Using ${TRANSACTION_EXECUTOR} executer: ${bot.isWarp || bot.isJito || (TRANSACTION_EXECUTOR === 'default' ? true : false)}`,
-  );
+    `Using ${TRANSACTION_EXECUTOR} executer: ${bot.isWarp || bot.isJito || (TRANSACTION_EXECUTOR === 'default' ? true : false)}`
+  )
   if (bot.isWarp || bot.isJito) {
-    logger.info(`${TRANSACTION_EXECUTOR} fee: ${CUSTOM_FEE}`);
+    logger.info(`${TRANSACTION_EXECUTOR} fee: ${CUSTOM_FEE}`)
   } else {
-    logger.info(`Compute Unit limit: ${botConfig.unitLimit}`);
-    logger.info(`Compute Unit price (micro lamports): ${botConfig.unitPrice}`);
+    logger.info(`Compute Unit limit: ${botConfig.unitLimit}`)
+    logger.info(`Compute Unit price (micro lamports): ${botConfig.unitPrice}`)
   }
 
-  logger.info(`Single token at the time: ${botConfig.oneTokenAtATime}`);
-  logger.info(`Pre load existing markets: ${PRE_LOAD_EXISTING_MARKETS}`);
-  logger.info(`Cache new markets: ${CACHE_NEW_MARKETS}`);
-  logger.info(`Log level: ${LOG_LEVEL}`);
+  logger.info(`Single token at the time: ${botConfig.oneTokenAtATime}`)
+  logger.info(`Pre load existing markets: ${PRE_LOAD_EXISTING_MARKETS}`)
+  logger.info(`Cache new markets: ${CACHE_NEW_MARKETS}`)
+  logger.info(`Log level: ${LOG_LEVEL}`)
 
-  logger.info('- Buy -');
-  logger.info(`Buy amount: ${botConfig.quoteAmount.toFixed()} ${botConfig.quoteToken.name}`);
-  logger.info(`Auto buy delay: ${botConfig.autoBuyDelay} ms`);
-  logger.info(`Max buy retries: ${botConfig.maxBuyRetries}`);
-  logger.info(`Buy amount (${quoteToken.symbol}): ${botConfig.quoteAmount.toFixed()}`);
-  logger.info(`Buy slippage: ${botConfig.buySlippage}%`);
+  logger.info('- Buy -')
+  logger.info(`Buy amount: ${botConfig.quoteAmount.toFixed()} ${botConfig.quoteToken.name}`)
+  logger.info(`Auto buy delay: ${botConfig.autoBuyDelay} ms`)
+  logger.info(`Max buy retries: ${botConfig.maxBuyRetries}`)
+  logger.info(`Buy amount (${quoteToken.symbol}): ${botConfig.quoteAmount.toFixed()}`)
+  logger.info(`Buy slippage: ${botConfig.buySlippage}%`)
 
-  logger.info('- Sell -');
-  logger.info(`Auto sell: ${AUTO_SELL}`);
-  logger.info(`Auto sell delay: ${botConfig.autoSellDelay} ms`);
-  logger.info(`Max sell retries: ${botConfig.maxSellRetries}`);
-  logger.info(`Sell slippage: ${botConfig.sellSlippage}%`);
-  logger.info(`Price check interval: ${botConfig.priceCheckInterval} ms`);
-  logger.info(`Price check duration: ${botConfig.priceCheckDuration} ms`);
-  logger.info(`Take profit: ${botConfig.takeProfit}%`);
-  logger.info(`Stop loss: ${botConfig.stopLoss}%`);
+  logger.info('- Sell -')
+  logger.info(`Auto sell: ${AUTO_SELL}`)
+  logger.info(`Auto sell delay: ${botConfig.autoSellDelay} ms`)
+  logger.info(`Max sell retries: ${botConfig.maxSellRetries}`)
+  logger.info(`Sell slippage: ${botConfig.sellSlippage}%`)
+  logger.info(`Price check interval: ${botConfig.priceCheckInterval} ms`)
+  logger.info(`Price check duration: ${botConfig.priceCheckDuration} ms`)
+  logger.info(`Take profit: ${botConfig.takeProfit}%`)
+  logger.info(`Stop loss: ${botConfig.stopLoss}%`)
 
-  logger.info('- Snipe list -');
-  logger.info(`Snipe list: ${botConfig.useSnipeList}`);
-  logger.info(`Snipe list refresh interval: ${SNIPE_LIST_REFRESH_INTERVAL} ms`);
+  logger.info('- Snipe list -')
+  logger.info(`Snipe list: ${botConfig.useSnipeList}`)
+  logger.info(`Snipe list refresh interval: ${SNIPE_LIST_REFRESH_INTERVAL} ms`)
 
   if (botConfig.useSnipeList) {
-    logger.info('- Filters -');
-    logger.info(`Filters are disabled when snipe list is on`);
+    logger.info('- Filters -')
+    logger.info(`Filters are disabled when snipe list is on`)
   } else {
-    logger.info('- Filters -');
-    logger.info(`Filter check interval: ${botConfig.filterCheckInterval} ms`);
-    logger.info(`Filter check duration: ${botConfig.filterCheckDuration} ms`);
-    logger.info(`Consecutive filter matches: ${botConfig.consecutiveMatchCount}`);
-    logger.info(`Check renounced: ${botConfig.checkRenounced}`);
-    logger.info(`Check freezable: ${botConfig.checkFreezable}`);
-    logger.info(`Check burned: ${botConfig.checkBurned}`);
-    logger.info(`Min pool size: ${botConfig.minPoolSize.toFixed()}`);
-    logger.info(`Max pool size: ${botConfig.maxPoolSize.toFixed()}`);
+    logger.info('- Filters -')
+    logger.info(`Filter check interval: ${botConfig.filterCheckInterval} ms`)
+    logger.info(`Filter check duration: ${botConfig.filterCheckDuration} ms`)
+    logger.info(`Consecutive filter matches: ${botConfig.consecutiveMatchCount}`)
+    logger.info(`Check renounced: ${botConfig.checkRenounced}`)
+    logger.info(`Check freezable: ${botConfig.checkFreezable}`)
+    logger.info(`Check burned: ${botConfig.checkBurned}`)
+    logger.info(`Min pool size: ${botConfig.minPoolSize.toFixed()}`)
+    logger.info(`Max pool size: ${botConfig.maxPoolSize.toFixed()}`)
   }
 
-  logger.info('------- CONFIGURATION END -------');
+  logger.info('------- CONFIGURATION END -------')
 
-  logger.info('Bot is running! Press CTRL + C to stop it.');
+  logger.info('Bot is running! Press CTRL + C to stop it.')
 }
 
 const runListener = async () => {
-  logger.level = LOG_LEVEL;
-  logger.info('Bot is starting...');
+  logger.level = LOG_LEVEL
+  logger.info('Bot is starting...')
 
-  const marketCache = new MarketCache(connection);
-  const poolCache = new PoolCache();
-  let txExecutor: TransactionExecutor;
+  const marketCache = new MarketCache(connection)
+  const poolCache = new PoolCache()
+  let txExecutor: TransactionExecutor
 
   switch (TRANSACTION_EXECUTOR) {
     case 'warp': {
-      txExecutor = new WarpTransactionExecutor(CUSTOM_FEE);
-      break;
+      txExecutor = new WarpTransactionExecutor(CUSTOM_FEE)
+      break
     }
     case 'jito': {
-      txExecutor = new JitoTransactionExecutor(CUSTOM_FEE, connection);
-      break;
+      txExecutor = new JitoTransactionExecutor(CUSTOM_FEE, connection)
+      break
     }
     default: {
-      txExecutor = new DefaultTransactionExecutor(connection);
-      break;
+      txExecutor = new DefaultTransactionExecutor(connection)
+      break
     }
   }
 
-  const wallet = getWallet(PRIVATE_KEY.trim());
-  const quoteToken = getToken(QUOTE_MINT);
-  const botConfig = <BotConfig>{
+  const wallet = getWallet(PRIVATE_KEY.trim())
+  const quoteToken = getToken(QUOTE_MINT)
+  const botConfig = {
     wallet,
     quoteAta: getAssociatedTokenAddressSync(quoteToken.mint, wallet.publicKey),
     checkRenounced: CHECK_IF_MINT_IS_RENOUNCED,
@@ -190,56 +174,56 @@ const runListener = async () => {
     filterCheckInterval: FILTER_CHECK_INTERVAL,
     filterCheckDuration: FILTER_CHECK_DURATION,
     consecutiveMatchCount: CONSECUTIVE_FILTER_MATCHES,
-  };
+  }
 
-  const bot = new Bot(connection, marketCache, poolCache, txExecutor, botConfig);
-  const valid = await bot.validate();
+  const bot = new Bot(connection, marketCache, poolCache, txExecutor, botConfig)
+  const valid = await bot.validate()
 
   if (!valid) {
-    logger.info('Bot is exiting...');
-    process.exit(1);
+    logger.info('Bot is exiting...')
+    process.exit(1)
   }
 
   if (PRE_LOAD_EXISTING_MARKETS) {
-    await marketCache.init({ quoteToken });
+    await marketCache.init({ quoteToken })
   }
 
-  const runTimestamp = Math.floor(new Date().getTime() / 1000);
-  const listeners = new Listeners(connection);
+  const runTimestamp = Math.floor(new Date().getTime() / 1000)
+  const listeners = new Listeners(connection)
   await listeners.start({
     walletPublicKey: wallet.publicKey,
     quoteToken,
     autoSell: AUTO_SELL,
     cacheNewMarkets: CACHE_NEW_MARKETS,
-  });
+  })
 
   listeners.on('market', (updatedAccountInfo: KeyedAccountInfo) => {
-    const marketState = MARKET_STATE_LAYOUT_V3.decode(updatedAccountInfo.accountInfo.data);
-    marketCache.save(updatedAccountInfo.accountId.toString(), marketState);
-  });
+    const marketState = MARKET_STATE_LAYOUT_V3.decode(updatedAccountInfo.accountInfo.data)
+    marketCache.save(updatedAccountInfo.accountId.toString(), marketState)
+  })
 
   listeners.on('pool', async (updatedAccountInfo: KeyedAccountInfo) => {
-    const poolState = LIQUIDITY_STATE_LAYOUT_V4.decode(updatedAccountInfo.accountInfo.data);
-    const poolOpenTime = parseInt(poolState.poolOpenTime.toString());
-    const exists = await poolCache.get(poolState.baseMint.toString());
+    const poolState = LIQUIDITY_STATE_LAYOUT_V4.decode(updatedAccountInfo.accountInfo.data)
+    const poolOpenTime = parseInt(poolState.poolOpenTime.toString())
+    const exists = await poolCache.get(poolState.baseMint.toString())
 
     if (!exists && poolOpenTime > runTimestamp) {
-      poolCache.save(updatedAccountInfo.accountId.toString(), poolState);
-      await bot.buy(updatedAccountInfo.accountId, poolState);
+      poolCache.save(updatedAccountInfo.accountId.toString(), poolState)
+      await bot.buy(updatedAccountInfo.accountId, poolState)
     }
-  });
+  })
 
   listeners.on('wallet', async (updatedAccountInfo: KeyedAccountInfo) => {
-    const accountData = AccountLayout.decode(updatedAccountInfo.accountInfo.data);
+    const accountData = AccountLayout.decode(updatedAccountInfo.accountInfo.data)
 
     if (accountData.mint.equals(quoteToken.mint)) {
-      return;
+      return
     }
 
-    await bot.sell(updatedAccountInfo.accountId, accountData);
-  });
+    await bot.sell(updatedAccountInfo.accountId, accountData)
+  })
 
-  printDetails(wallet, quoteToken, bot);
-};
+  printDetails(wallet, quoteToken, bot)
+}
 
-runListener();
+runListener()

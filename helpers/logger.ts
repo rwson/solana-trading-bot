@@ -1,8 +1,8 @@
-import pino from 'pino';
+import pino from 'pino'
 
 const transport = pino.transport({
   target: 'pino-pretty',
-});
+})
 
 export const logger = pino(
   {
@@ -13,5 +13,5 @@ export const logger = pino(
     },
     base: undefined,
   },
-  transport,
-);
+  transport
+)

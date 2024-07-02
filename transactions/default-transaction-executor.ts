@@ -1,12 +1,6 @@
-import {
-  BlockhashWithExpiryBlockHeight,
-  Connection,
-  Keypair,
-  Transaction,
-  VersionedTransaction,
-} from '@solana/web3.js';
-import { TransactionExecutor } from './transaction-executor.interface';
-import { logger } from '../helpers';
+import { BlockhashWithExpiryBlockHeight, Connection, Keypair, Transaction, VersionedTransaction } from '@solana/web3.js'
+import { TransactionExecutor } from './transaction-executor.interface'
+import { logger } from '../helpers'
 
 export class DefaultTransactionExecutor implements TransactionExecutor {
   constructor(private readonly connection: Connection) {}
@@ -14,19 +8,19 @@ export class DefaultTransactionExecutor implements TransactionExecutor {
   public async executeAndConfirm(
     transaction: VersionedTransaction,
     payer: Keypair,
-    latestBlockhash: BlockhashWithExpiryBlockHeight,
-  ): Promise<{ confirmed: boolean; signature?: string, error?: string }> {
-    logger.debug('Executing transaction...');
-    const signature = await this.execute(transaction);
+    latestBlockhash: BlockhashWithExpiryBlockHeight
+  ): Promise<{ confirmed: boolean; signature?: string; error?: string }> {
+    logger.debug('Executing transaction...')
+    const signature = await this.execute(transaction)
 
-    logger.debug({ signature }, 'Confirming transaction...');
-    return this.confirm(signature, latestBlockhash);
+    logger.debug({ signature }, 'Confirming transaction...')
+    return this.confirm(signature, latestBlockhash)
   }
 
   private async execute(transaction: Transaction | VersionedTransaction) {
     return this.connection.sendRawTransaction(transaction.serialize(), {
       preflightCommitment: this.connection.commitment,
-    });
+    })
   }
 
   private async confirm(signature: string, latestBlockhash: BlockhashWithExpiryBlockHeight) {
@@ -36,9 +30,9 @@ export class DefaultTransactionExecutor implements TransactionExecutor {
         lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
         blockhash: latestBlockhash.blockhash,
       },
-      this.connection.commitment,
-    );
+      this.connection.commitment
+    )
 
-    return { confirmed: !confirmation.value.err, signature };
+    return { confirmed: !confirmation.value.err, signature }
   }
 }

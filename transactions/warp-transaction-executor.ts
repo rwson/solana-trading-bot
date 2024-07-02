@@ -5,27 +5,27 @@ import {
   SystemProgram,
   TransactionMessage,
   VersionedTransaction,
-} from '@solana/web3.js';
-import { TransactionExecutor } from './transaction-executor.interface';
-import { logger } from '../helpers';
-import axios, { AxiosError } from 'axios';
-import bs58 from 'bs58';
-import { Currency, CurrencyAmount } from '@raydium-io/raydium-sdk';
+} from '@solana/web3.js'
+import { TransactionExecutor } from './transaction-executor.interface'
+import { logger } from '../helpers'
+import axios, { AxiosError } from 'axios'
+import bs58 from 'bs58'
+import { Currency, CurrencyAmount } from '@raydium-io/raydium-sdk'
 
 export class WarpTransactionExecutor implements TransactionExecutor {
-  private readonly warpFeeWallet = new PublicKey('WARPzUMPnycu9eeCZ95rcAUxorqpBqHndfV3ZP5FSyS');
+  private readonly warpFeeWallet = new PublicKey('WARPzUMPnycu9eeCZ95rcAUxorqpBqHndfV3ZP5FSyS')
 
   constructor(private readonly warpFee: string) {}
 
   public async executeAndConfirm(
     transaction: VersionedTransaction,
     payer: Keypair,
-    latestBlockhash: BlockhashWithExpiryBlockHeight,
+    latestBlockhash: BlockhashWithExpiryBlockHeight
   ): Promise<{ confirmed: boolean; signature?: string; error?: string }> {
-    logger.debug('Executing transaction...');
+    logger.debug('Executing transaction...')
 
     try {
-      const fee = new CurrencyAmount(Currency.SOL, this.warpFee, false).raw.toNumber();
+      const fee = new CurrencyAmount(Currency.SOL, this.warpFee, false).raw.toNumber()
       const warpFeeMessage = new TransactionMessage({
         payerKey: payer.publicKey,
         recentBlockhash: latestBlockhash.blockhash,
@@ -36,10 +36,10 @@ export class WarpTransactionExecutor implements TransactionExecutor {
             lamports: fee,
           }),
         ],
-      }).compileToV0Message();
+      }).compileToV0Message()
 
-      const warpFeeTx = new VersionedTransaction(warpFeeMessage);
-      warpFeeTx.sign([payer]);
+      const warpFeeTx = new VersionedTransaction(warpFeeMessage)
+      warpFeeTx.sign([payer])
 
       const response = await axios.post<{ confirmed: boolean; signature: string; error?: string }>(
         'https://tx.warp.id/transaction/execute',
@@ -49,16 +49,16 @@ export class WarpTransactionExecutor implements TransactionExecutor {
         },
         {
           timeout: 100000,
-        },
-      );
+        }
+      )
 
-      return response.data;
+      return response.data
     } catch (error) {
       if (error instanceof AxiosError) {
-        logger.trace({ error: error.response?.data }, 'Failed to execute warp transaction');
+        logger.trace({ error: error.response?.data }, 'Failed to execute warp transaction')
       }
     }
 
-    return { confirmed: false };
+    return { confirmed: false }
   }
 }
