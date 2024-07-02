@@ -4,6 +4,7 @@
   "version": "2.0.1",
   "scripts": {
     "start": "ts-node index.ts",
+    "start:prod": "pm2 start",
     "tsc": "tsc --noEmit",
     "format": "prettier . --write"
   },

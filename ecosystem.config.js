@@ -1,8 +1,8 @@
 module.exports = {
   apps: [
     {
-      name: '🚀🚀🚀🚀🚀solana🚀🚀🚀🚀🚀',
-      script: 'ts-node',
+      name: 'solana-bot',
+      script: './node_modules/.bin/ts-node',
       args: 'index.ts',
     },
   ],
